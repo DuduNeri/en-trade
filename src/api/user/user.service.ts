@@ -9,7 +9,7 @@ export class UserService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const { name, email, password, avatar } = createUserDto;
@@ -31,6 +31,15 @@ export class UserService {
 
     const { password: _, ...userWithoutPassword } = user.toJSON();
 
+    return userWithoutPassword;
+  }
+
+  async findByUser(id: string) {
+    const user = await this.userModel.findByPk(id);
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+    const { password: _, ...userWithoutPassword } = user.toJSON();
     return userWithoutPassword;
   }
 }

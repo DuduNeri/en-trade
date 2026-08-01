@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserModule } from './user/user.module';
+import { UserModule } from './api/user/user.module';
+import { User } from './api/user/entities/user.entity';
 
 @Module({
   imports: [
@@ -19,10 +20,15 @@ import { UserModule } from './user/user.module';
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB_DATABASE'),
         autoLoadModels: true,
+        logging: false,
         synchronize: true,
+        sync: {
+          alter: true,
+        },
+        models: [User],
       }),
     }),
     UserModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

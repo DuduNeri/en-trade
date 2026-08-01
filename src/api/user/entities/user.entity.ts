@@ -1,11 +1,11 @@
 import { Table, Column, Model, DataType, PrimaryKey, Default } from 'sequelize-typescript';
-import { IUserResponse, UserCreationAttributes } from '../interfaces/user.interface';
+import { UserCreationAttributes } from '../interfaces/user.interface';
 
 @Table({
     tableName: 'users',
     timestamps: true,
 })
-export class User extends Model<User, UserCreationAttributes> implements IUserResponse {
+export class User extends Model<User, UserCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column({
