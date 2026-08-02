@@ -1,0 +1,39 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: en-trade-api
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker 
+    depends_on:
+      - postgres
+    networks:
+      - en-trade-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: en-trade-postgres
+    restart: always
+    env_file:
+      - .env        
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - en-trade-network
+
+volumes:
+  postgres_data:
+
+networks:
+  en-trade-network:
+    driver: bridge
