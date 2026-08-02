@@ -6,9 +6,9 @@ services:
     container_name: en-trade-api
     restart: always
     ports:
-      - "8000:8000"
+      - "${PORT}:${PORT}"
     env_file:
-      - .env.docker 
+      - .env 
     depends_on:
       - postgres
     networks:

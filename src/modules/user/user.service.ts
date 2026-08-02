@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +15,10 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     const { name, email, password, avatar } = createUserDto;
+
+    if (password.length < 6) {
+      throw new ConflictException('Password must be at least 6 characters long');
+    }
 
     const userExist = await this.userModel.findOne({ where: { email } });
     if (userExist) {
@@ -39,7 +43,7 @@ export class UserService {
   async findByUser(id: string) {
     const user = await this.userModel.findByPk(id);
     if (!user) {
-      throw new ConflictException('User not found');
+      throw new NotFoundException('User not found');
     }
     const { password: _, ...userWithoutPassword } = user.toJSON();
     return userWithoutPassword;
@@ -54,7 +58,7 @@ export class UserService {
       offset,
       attributes: { exclude: ['password'] },
       order: [['createdAt', 'DESC']],
-    })
+    });
 
     const formattedUsers = users.map(
       (user) => new UserResponseDto(user.toJSON()),
@@ -69,5 +73,13 @@ export class UserService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async findByEmail(email: string) {
+    return this.userModel.findOne({ where: { email } });
+  }
+
+  async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
   }
 }

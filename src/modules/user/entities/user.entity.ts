@@ -38,4 +38,9 @@ export class User extends Model<User, UserCreationAttributes> {
         allowNull: true,
     })
     declare avatar?: string;
+    
+    override toJSON(): any {
+        const { password, ...values } = this.get();
+        return values;
+    }
 }
