@@ -5,6 +5,7 @@ import { UserCreationAttributes } from '../interfaces/user.interface';
     tableName: 'users',
     timestamps: true,
 })
+
 export class User extends Model<User, UserCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)

@@ -9,6 +9,12 @@ export class UserResponseDto {
   @Exclude() 
   password!: string;
 
+  @Exclude()
+  createdAt!: Date;
+  
+  @Exclude()
+  updatedAt!: Date;
+
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
   }

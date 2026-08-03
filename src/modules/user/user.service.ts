@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
     private userModel: typeof User,
   ) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const { name, email, password, avatar } = createUserDto;
 
     if (password.length < 6) {
@@ -40,13 +41,24 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  async findByUser(id: string) {
+  async findUserById(id: string) {
     const user = await this.userModel.findByPk(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
     const { password: _, ...userWithoutPassword } = user.toJSON();
     return userWithoutPassword;
+  }
+
+  async findUserByName(name: string): Promise<UserResponseDto> {
+    const user = await this.userModel.findOne({
+      where: { name },
+      attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return new UserResponseDto(user.toJSON());
   }
 
   async findAllUsers(data: GetUsersDto) {
@@ -74,6 +86,43 @@ export class UserService {
       },
     };
   }
+
+  async excludeUser(id: string) {
+    const user = await this.userModel.findByPk(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await user.destroy();
+    return { message: 'User deleted successfully' };
+  }
+
+  async updateUser(id: string, data: UpdateUserDto) {
+    const user = await this.userModel.findByPk(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (data.password && data.password.length < 6) {
+      throw new ConflictException('Password must be at least 6 characters long');
+    }
+
+    if (data.password) {
+      const isSamePassword = await bcrypt.compare(data.password, user.password);
+
+      if (isSamePassword) {
+        throw new ConflictException('New password cannot be the same as the old password');
+      }
+
+      const saltRounds = 10;
+      data.password = await bcrypt.hash(data.password, saltRounds);
+    }
+
+    await user.update(data);
+
+    const { password: _, ...userWithoutPassword } = user.toJSON();
+    return userWithoutPassword;
+  }
+
 
   async findByEmail(email: string) {
     return this.userModel.findOne({ where: { email } });
