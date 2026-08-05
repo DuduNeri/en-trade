@@ -11,7 +11,9 @@ export class SignInService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signIn(data: SignInDto): Promise<{ token: string; user: Partial<User> }> {
+  async signIn(
+    data: SignInDto,
+  ): Promise<{ token: string; user: Partial<User> }> {
     const user = await this.userService.findByEmail(data.email);
 
     if (!user) {

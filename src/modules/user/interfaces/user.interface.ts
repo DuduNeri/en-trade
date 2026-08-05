@@ -7,8 +7,8 @@ export interface UserCreationAttributes {
 }
 
 export interface IUserResponse {
-    id: string;
-    name: string;
-    email: string;
-    avatar?: string;
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
 }

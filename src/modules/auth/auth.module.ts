@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserModule } from '../user/user.module'; 
+import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
-import { SignInService } from './services/singin.service'; 
+import { SignInService } from './services/singin.service';
 import { AuthGuard } from './guards/auth.guard';
 @Module({
   imports: [
     UserModule,
     JwtModule.registerAsync({
-      global: true, 
+      global: true,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
@@ -20,6 +20,5 @@ import { AuthGuard } from './guards/auth.guard';
   controllers: [AuthController],
   providers: [SignInService],
   exports: [SignInService, JwtModule],
- 
 })
 export class AuthModule {}

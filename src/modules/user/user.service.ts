@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,13 +16,15 @@ export class UserService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
-  ) { }
+  ) {}
 
   async createUser(createUserDto: CreateUserDto) {
     const { name, email, password, avatar } = createUserDto;
 
     if (password.length < 6) {
-      throw new ConflictException('Password must be at least 6 characters long');
+      throw new ConflictException(
+        'Password must be at least 6 characters long',
+      );
     }
 
     const userExist = await this.userModel.findOne({ where: { email } });
@@ -53,7 +59,7 @@ export class UserService {
   async findUserByName(name: string): Promise<UserResponseDto> {
     const user = await this.userModel.findOne({
       where: { name },
-      attributes: { exclude: ['createdAt', 'updatedAt'] }
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -103,14 +109,18 @@ export class UserService {
     }
 
     if (data.password && data.password.length < 6) {
-      throw new ConflictException('Password must be at least 6 characters long');
+      throw new ConflictException(
+        'Password must be at least 6 characters long',
+      );
     }
 
     if (data.password) {
       const isSamePassword = await bcrypt.compare(data.password, user.password);
 
       if (isSamePassword) {
-        throw new ConflictException('New password cannot be the same as the old password');
+        throw new ConflictException(
+          'New password cannot be the same as the old password',
+        );
       }
 
       const saltRounds = 10;
@@ -123,12 +133,14 @@ export class UserService {
     return userWithoutPassword;
   }
 
-
   async findByEmail(email: string) {
     return this.userModel.findOne({ where: { email } });
   }
 
-  async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  async comparePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 }

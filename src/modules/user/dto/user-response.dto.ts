@@ -6,12 +6,12 @@ export class UserResponseDto {
   email!: string;
   avatar?: string;
 
-  @Exclude() 
+  @Exclude()
   password!: string;
 
   @Exclude()
   createdAt!: Date;
-  
+
   @Exclude()
   updatedAt!: Date;
 

@@ -17,7 +17,7 @@ import { AuthGuard } from './modules/auth/guards/auth.guard';
   ],
   providers: [
     {
-      provide: APP_GUARD, 
+      provide: APP_GUARD,
       useClass: AuthGuard,
     },
   ],

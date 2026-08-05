@@ -1,28 +1,41 @@
-import { Controller, Get, Post, Body, Param, Query, Delete, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Public } from '../auth/decorators/is-public.decorator';
+import { UserRoles } from '../../enums/user-roles.enum';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
-  
+  constructor(private readonly userService: UserService) {}
+
   @Public()
   @Post('create')
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
-  } userWithoutPassword
+  }
+  userWithoutPassword;
 
   @Get('all')
   @UseGuards(AuthGuard)
   async getAllUsers(@Query() data: GetUsersDto) {
     return await this.userService.findAllUsers(data);
   }
-
   @Get(':id')
+  @Roles(UserRoles.ADMIN)
   @UseGuards(AuthGuard)
   async getUserById(@Param('id') id: string) {
     return await this.userService.findUserById(id);
@@ -33,8 +46,8 @@ export class UserController {
   async getUserByName(@Param('name') name: string) {
     return await this.userService.findUserByName(name);
   }
-
   @Delete('delete/:id')
+  @Roles(UserRoles.ADMIN)
   @UseGuards(AuthGuard)
   async deleteUser(@Param('id') id: string) {
     return await this.userService.excludeUser(id);
@@ -42,7 +55,10 @@ export class UserController {
 
   @Put('update/:id')
   @UseGuards(AuthGuard)
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return await this.userService.updateUser(id, updateUserDto);
   }
 }
