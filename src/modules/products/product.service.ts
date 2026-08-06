@@ -8,6 +8,5 @@ export class ProductService {
     @InjectModel(Product)
     private readonly productRepository: typeof Product
   ) {}
-
   
 }
