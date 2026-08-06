@@ -41,7 +41,7 @@ export class UserController {
   async getAllUsers(@Query() data: GetUsersDto) {
     return this.userService.findAllUsers(data);
   }
-
+ret
   @Get(':id')
   @UseGuards()
   @Roles(UserRoles.ADMIN)
@@ -60,6 +60,11 @@ export class UserController {
   @Roles(UserRoles.ADMIN)
   async deleteUser(@Param('id') id: string) {
     return this.userService.excludeUser(id);
+  }
+
+  @Delete('all')
+  async deletedAll(){
+    return this.userService.deleteAll()
   }
 
   @Put('update/:id')

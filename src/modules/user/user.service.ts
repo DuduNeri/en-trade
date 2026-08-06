@@ -152,6 +152,16 @@ export class UserService {
     return this.userModel.findOne({ where: { email } });
   }
 
+  async deleteAll(){
+    await this.userModel.destroy({
+      where: [],
+      truncate: true
+    })
+    return {
+      message: "Destroyed users"
+    }
+  }
+
   async comparePassword(
     plainPassword: string,
     hashedPassword: string,

@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'; // 1. Importe o forwardRef
+import { Module, forwardRef } from '@nestjs/common'; 
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
