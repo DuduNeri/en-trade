@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/guards/auth.guard';
+import { ProductModule } from './modules/products/product.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthGuard } from './modules/auth/guards/auth.guard';
     }),
     DatabaseModule,
     UserModule,
+    ProductModule,
     AuthModule,
   ],
   providers: [
