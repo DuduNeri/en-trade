@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserSellerDto } from './dto/create-seller';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -19,46 +20,54 @@ import { UserRoles } from '../../enums/user-roles.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('user')
+@UseGuards(AuthGuard) 
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Public()
   @Post('create')
   async createUser(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.createUser(createUserDto);
+    return this.userService.createUser(createUserDto);
   }
-  userWithoutPassword;
+
+  @Public()
+  @Post('create-seller')
+  async createUserSeller(@Body() createSellerDto: CreateUserSellerDto) {
+    return this.userService.createUserSeller(createSellerDto);
+  }
 
   @Get('all')
-  @UseGuards(AuthGuard)
+  @UseGuards()
   async getAllUsers(@Query() data: GetUsersDto) {
-    return await this.userService.findAllUsers(data);
+    return this.userService.findAllUsers(data);
   }
+
   @Get(':id')
+  @UseGuards()
   @Roles(UserRoles.ADMIN)
-  @UseGuards(AuthGuard)
   async getUserById(@Param('id') id: string) {
-    return await this.userService.findUserById(id);
+    return this.userService.findUserById(id);
   }
 
   @Get('name/:name')
-  @UseGuards(AuthGuard)
+  @UseGuards()
   async getUserByName(@Param('name') name: string) {
-    return await this.userService.findUserByName(name);
+    return this.userService.findUserByName(name);
   }
+
   @Delete('delete/:id')
+  @UseGuards()
   @Roles(UserRoles.ADMIN)
-  @UseGuards(AuthGuard)
   async deleteUser(@Param('id') id: string) {
-    return await this.userService.excludeUser(id);
+    return this.userService.excludeUser(id);
   }
 
   @Put('update/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards()
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.userService.updateUser(id, updateUserDto);
+    return this.userService.updateUser(id, updateUserDto);
   }
 }

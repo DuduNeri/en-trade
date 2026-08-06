@@ -1,7 +1,12 @@
+import { AuthService } from './../auth/services/auth.service';
+import { SignInService } from './../auth/services/singin.service';
 import {
+  BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
@@ -10,22 +15,32 @@ import { User } from './entities/user.entity';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserSellerDto } from './dto/create-seller';
+import { UserRoles } from '../../enums/user-roles.enum';
+import { where } from 'sequelize';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const { name, email, password, avatar } = createUserDto;
+    return this.saveUserWithRole(createUserDto, UserRoles.USER);
+  }
 
-    if (password.length < 6) {
-      throw new ConflictException(
-        'Password must be at least 6 characters long',
-      );
-    }
+  async createUserSeller(data: CreateUserSellerDto) {
+    return this.saveUserWithRole(data, UserRoles.SELLER);
+  }
+
+  private async saveUserWithRole(
+    dto: CreateUserDto | CreateUserSellerDto,
+    role: UserRoles,
+  ) {
+    const { name, email, password, avatar } = dto;
 
     const userExist = await this.userModel.findOne({ where: { email } });
     if (userExist) {
@@ -40,11 +55,17 @@ export class UserService {
       email,
       password: hashedPassword,
       avatar,
+      role,
     });
 
-    const { password: _, ...userWithoutPassword } = user.toJSON();
+    const { token } = await this.authService.generateToken(user);
+    
+    const userWithoutPassword = this.authService.sanitizeUser(user);
 
-    return userWithoutPassword;
+    return {
+      token,
+      user: userWithoutPassword,
+    };
   }
 
   async findUserById(id: string) {
@@ -108,17 +129,11 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    if (data.password && data.password.length < 6) {
-      throw new ConflictException(
-        'Password must be at least 6 characters long',
-      );
-    }
-
     if (data.password) {
       const isSamePassword = await bcrypt.compare(data.password, user.password);
 
       if (isSamePassword) {
-        throw new ConflictException(
+        throw new BadRequestException(
           'New password cannot be the same as the old password',
         );
       }

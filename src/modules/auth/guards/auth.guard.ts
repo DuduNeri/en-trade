@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,6 +10,9 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/is-public.decorator';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { UserRoles } from '../../../enums/user-roles.enum';
+import { JwtPayload } from '../interfaces/jwt-payload.interface'; 
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -36,13 +40,39 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       });
 
       request['user'] = payload;
     } catch {
       throw new UnauthorizedException('Token inválido ou expirado');
+    }
+
+    const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!requiredRoles) {
+      return true;
+    }
+
+    // 2. Informe ao TypeScript a tipagem do objeto user
+    const user = request['user'] as JwtPayload;
+
+    if (!user || !user.role) {
+      throw new ForbiddenException(
+        'Acesso negado: Perfil de usuário não encontrado no token',
+      );
+    }
+
+    const hasRole = requiredRoles.includes(user.role);
+
+    if (!hasRole) {
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este recurso',
+      );
     }
 
     return true;

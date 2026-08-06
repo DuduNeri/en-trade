@@ -4,6 +4,7 @@ export interface UserCreationAttributes {
   email: string;
   password: string;
   avatar?: string;
+  role: string,
 }
 
 export interface IUserResponse {
@@ -11,4 +12,5 @@ export interface IUserResponse {
   name: string;
   email: string;
   avatar?: string;
+  role:string
 }

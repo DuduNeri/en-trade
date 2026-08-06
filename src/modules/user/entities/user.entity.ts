@@ -5,8 +5,10 @@ import {
   DataType,
   PrimaryKey,
   Default,
+  AllowNull,
 } from 'sequelize-typescript';
-import { UserCreationAttributes } from '../interfaces/user.interface';
+import { UserCreationAttributes } from '../interfaces/user.interfaces';
+import { UserRoles } from './../../../enums/user-roles.enum';
 
 @Table({
   tableName: 'users',
@@ -45,6 +47,13 @@ export class User extends Model<User, UserCreationAttributes> {
     allowNull: true,
   })
   declare avatar?: string;
+
+  @AllowNull(false)
+  @Default(UserRoles.USER)
+  @Column({
+    type: DataType.ENUM(...Object.values(UserRoles)),
+  })
+  declare role: UserRoles;
 
   override toJSON(): any {
     const { password, ...values } = this.get();
