@@ -21,12 +21,9 @@ import { Product } from '../modules/products/entities/product.entity';
 
         autoLoadModels: true,
 
-        models: [
-          User,
-          Product,
-        ],
+        models: [User, Product],
 
-        logging: console.log,
+        logging: true,
 
         synchronize: false,
       }),

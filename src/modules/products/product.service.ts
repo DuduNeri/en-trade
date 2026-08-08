@@ -2,7 +2,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { Injectable } from '@nestjs/common';
 import { Product } from './entities/product.entity';
 import { InjectModel } from '@nestjs/sequelize';
-
+import { ProductResponse } from './dto/get-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -11,12 +11,7 @@ export class ProductService {
     private readonly productRepository: typeof Product,
   ) {}
 
-
-  async createProduct(
-    data: CreateProductDto,
-    userId: string,
-  ) {
-    console.log('USER ID:', userId);
+  async createProduct(data: CreateProductDto, userId: string) {
 
     const product = await this.productRepository.create({
       ...data,
@@ -24,5 +19,10 @@ export class ProductService {
     });
 
     return product;
+  }
+
+  async getAllProducts(data: ProductResponse) {
+    const products = await this.productRepository.findAll();
+    return products;
   }
 }
