@@ -20,7 +20,7 @@ import { UserRoles } from '../../enums/user-roles.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('user')
-@UseGuards(AuthGuard) 
+@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -41,7 +41,7 @@ export class UserController {
   async getAllUsers(@Query() data: GetUsersDto) {
     return this.userService.findAllUsers(data);
   }
-ret
+  ret;
   @Get(':id')
   @UseGuards()
   @Roles(UserRoles.ADMIN)
@@ -63,8 +63,8 @@ ret
   }
 
   @Delete('all')
-  async deletedAll(){
-    return this.userService.deleteAll()
+  async deletedAll() {
+    return this.userService.deleteAll();
   }
 
   @Put('update/:id')
