@@ -11,6 +11,7 @@ import {
 
 export class ProductResponse {
   id!: string;
+  userId!: string;
   title!: string;
   slug!: string;
   description!: string;

@@ -6,11 +6,11 @@ import { User } from '../../user/entities/user.entity';
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  
   async generateToken(user: Partial<User>): Promise<{ token: string }> {
     const payload = {
       sub: user.id,
       email: user.email,
+      role: user.role,
     };
 
     const token = await this.jwtService.signAsync(payload);
@@ -18,9 +18,14 @@ export class AuthService {
     return { token };
   }
 
-  sanitizeUser(user: any): Partial<User> {
-    const plainUser = typeof user.toJSON === 'function' ? user.toJSON() : { ...user };
+  sanitizeUser(user: User): Partial<User> {
+    const plainUser =
+      typeof user.toJSON === 'function'
+        ? user.toJSON()
+        : { ...user };
+
     const { password: _, ...userWithoutPassword } = plainUser;
+
     return userWithoutPassword;
   }
 }
