@@ -1,3 +1,4 @@
+import { Roles } from './../decorators/roles.decorator';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
@@ -32,7 +33,9 @@ export class SignInService {
     const token = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,
+      role: user.role
     });
+
 
     const plainUser = user.toJSON ? user.toJSON() : { ...user };
     const { password: _, ...userWithoutPassword } = plainUser;

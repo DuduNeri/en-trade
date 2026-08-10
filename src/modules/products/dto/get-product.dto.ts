@@ -22,4 +22,8 @@ export class ProductResponse {
   image?: string;
   images?: string[];
   is_active!: boolean;
+
+  constructor(data: Partial<ProductResponse>) {
+    Object.assign(this, data);
+  }
 }

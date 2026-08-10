@@ -16,6 +16,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { ProductResponse } from './dto/get-product.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoles } from '../../enums/user-roles.enum';
+import { Public } from '../auth/decorators/is-public.decorator';
 
 @Controller('product')
 @UseGuards(AuthGuard)
@@ -28,13 +29,19 @@ export class ProductController {
     return this.productService.createProduct(data, req.user.sub);
   }
 
-  @Get('all')
-  async getAllProducts(@Query() data: ProductResponse) {
+  @Get('all') async getAllProducts(@Query() data: ProductResponse) {
     return this.productService.getAllProducts(data);
   }
 
   @Get(':id')
-  async getProd(@Param('id') id: string){
-    return this.productService.getProduct(id)
+  @Roles(UserRoles.SELLER)
+  async getProd(@Param('id') id: string) {
+    return this.productService.getProduct(id);
+  }
+
+  @Public()
+  @Get('slug/:slug')
+  async getProdBySlug(@Param('slug') slug: string) {
+    return this.productService.getProductBySlug(slug);
   }
 }

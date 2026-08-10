@@ -4,6 +4,7 @@ import { Product } from './entities/product.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { ProductResponse } from './dto/get-product.dto';
 import { throwError } from 'rxjs';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +26,7 @@ export class ProductService {
     const products = await this.productRepository.findAll();
 
     if (products.length == 0) {
-      throw new NotFoundException('Nenhum produto encontrado');
+      throw new NotFoundException('Products empty');
     }
     return products;
   }
@@ -35,7 +36,15 @@ export class ProductService {
     return response;
   }
 
-    // async getProductTitle(title: ProductResponse){
-    //   const 
-    // }
+  async getProductBySlug(slug: string): Promise<ProductResponse> {
+    const prod = await this.productRepository.findOne({
+      where: { slug },
+    });
+
+    if (!prod) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return prod.toJSON() as ProductResponse;
+  }
 }
