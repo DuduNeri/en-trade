@@ -3,8 +3,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from './entities/product.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { ProductResponse } from './dto/get-product.dto';
-import { throwError } from 'rxjs';
-import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductService {
@@ -22,13 +20,17 @@ export class ProductService {
     return product;
   }
 
-  async getAllProducts(data: ProductResponse) {
+  async getAllProducts(): Promise<ProductResponse[]> {
     const products = await this.productRepository.findAll();
 
-    if (products.length == 0) {
+    if (products.length === 0) {
       throw new NotFoundException('Products empty');
     }
-    return products;
+
+    return products.map((product) => ({
+      ...product,
+      slug: product.slug ?? '',
+    }));
   }
 
   async getProduct(id: string) {
@@ -46,5 +48,16 @@ export class ProductService {
     }
 
     return prod.toJSON() as ProductResponse;
+  }
+
+  async excludeProd(id: string) {
+    const prod = await this.productRepository.findByPk(id);
+
+    if (!prod) {
+      throw new NotFoundException('Product not found');
+    }
+
+    await prod.destroy();
+    return { message: 'Product deleted successfully' };
   }
 }

@@ -5,7 +5,6 @@ import {
   Req,
   UseGuards,
   Get,
-  Query,
   Param,
 } from '@nestjs/common';
 
@@ -29,8 +28,9 @@ export class ProductController {
     return this.productService.createProduct(data, req.user.sub);
   }
 
-  @Get('all') async getAllProducts(@Query() data: ProductResponse) {
-    return this.productService.getAllProducts(data);
+  @Get('all')
+  async getAllProducts(): Promise<ProductResponse[]> {
+    return this.productService.getAllProducts();
   }
 
   @Get(':id')

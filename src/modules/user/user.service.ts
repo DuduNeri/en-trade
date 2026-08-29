@@ -1,12 +1,11 @@
 import { AuthService } from './../auth/services/auth.service';
-import { SignInService } from './../auth/services/singin.service';
 import {
   BadRequestException,
   ConflictException,
   Inject,
   Injectable,
   NotFoundException,
-  forwardRef
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
@@ -17,7 +16,6 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserSellerDto } from './dto/create-seller';
 import { UserRoles } from '../../enums/user-roles.enum';
-import { where } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -59,7 +57,7 @@ export class UserService {
     });
 
     const { token } = await this.authService.generateToken(user);
-    
+
     const userWithoutPassword = this.authService.sanitizeUser(user);
 
     return {
@@ -73,7 +71,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { password: _, ...userWithoutPassword } = user.toJSON();
+    const { password: _, ...userWithoutPassword } = user.toJSON() as User;
     return userWithoutPassword;
   }
 
@@ -123,43 +121,33 @@ export class UserService {
     return { message: 'User deleted successfully' };
   }
 
-  async updateUser(id: string, data: UpdateUserDto) {
-    const user = await this.userModel.findByPk(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  // async updateUser(id: string, data: UpdateUserDto) {
+  //   const user = await this.userModel.findByPk(id);
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    if (data.password) {
-      const isSamePassword = await bcrypt.compare(data.password, user.password);
+  //   if (data.password) {
+  //     const isSamePassword = await bcrypt.compare(data.password, user.password);
 
-      if (isSamePassword) {
-        throw new BadRequestException(
-          'New password cannot be the same as the old password',
-        );
-      }
+  //     if (isSamePassword) {
+  //       throw new BadRequestException(
+  //         'New password cannot be the same as the old password',
+  //       );
+  //     }
 
-      const saltRounds = 10;
-      data.password = await bcrypt.hash(data.password, saltRounds);
-    }
+  //     const saltRounds = 10;
+  //     data.password = await bcrypt.hash(data.password, saltRounds);
+  //   }
 
-    await user.update(data);
+  //   await user.update(data);
 
-    const { password: _, ...userWithoutPassword } = user.toJSON();
-    return userWithoutPassword;
-  }
-
+  //   const { password: , ...userWithoutPassword } = user.toJSON() as User;
+  //   return userWithoutPassword;
+  // }
   async findByEmail(email: string) {
-    return this.userModel.findOne({ where: { email } });
-  }
-
-  async deleteAll(){
-    await this.userModel.destroy({
-      where: [],
-      truncate: true
-    })
-    return {
-      message: "Destroyed users"
-    }
+    return this.userModel.findOne({ where: { 
+      email } });
   }
 
   async comparePassword(

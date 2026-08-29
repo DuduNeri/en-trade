@@ -62,17 +62,12 @@ export class UserController {
     return this.userService.excludeUser(id);
   }
 
-  @Delete('all')
-  async deletedAll() {
-    return this.userService.deleteAll();
-  }
-
-  @Put('update/:id')
-  @UseGuards()
-  async updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.userService.updateUser(id, updateUserDto);
-  }
+  // @Put('update/:id')
+  // @UseGuards()
+  // async updateUser(
+  //   @Param('id') id: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  // ) {
+  //   return this.userService.updateUser(id, updateUserDto);
+  // }
 }
