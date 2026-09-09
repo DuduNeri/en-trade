@@ -1,23 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
-  Query,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UserRoles } from '../../enums/user-roles.enum';
+import { Public } from '../auth/decorators/is-public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateUserSellerDto } from './dto/create-seller';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { Public } from '../auth/decorators/is-public.decorator';
-import { UserRoles } from '../../enums/user-roles.enum';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { UserService } from './user.service';
 
 @Controller('user')
 @UseGuards(AuthGuard)
@@ -41,7 +41,7 @@ export class UserController {
   async getAllUsers(@Query() data: GetUsersDto) {
     return this.userService.findAllUsers(data);
   }
-  ret;
+
   @Get(':id')
   @UseGuards()
   @Roles(UserRoles.ADMIN)
@@ -62,12 +62,12 @@ export class UserController {
     return this.userService.excludeUser(id);
   }
 
-  // @Put('update/:id')
-  // @UseGuards()
-  // async updateUser(
-  //   @Param('id') id: string,
-  //   @Body() updateUserDto: UpdateUserDto,
-  // ) {
-  //   return this.userService.updateUser(id, updateUserDto);
-  // }
+  @Put('update/:id')
+  @UseGuards()
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateUser(id, updateUserDto);
+  }
 }

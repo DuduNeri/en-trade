@@ -1,8 +1,8 @@
-import { CreateProductDto } from './dto/create-product.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Product } from './entities/product.entity';
 import { InjectModel } from '@nestjs/sequelize';
+import { CreateProductDto } from './dto/create-product.dto';
 import { ProductResponse } from './dto/get-product.dto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {

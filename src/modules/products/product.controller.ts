@@ -1,21 +1,21 @@
 import {
-  Controller,
-  Post,
   Body,
-  Req,
-  UseGuards,
+  Controller,
   Get,
   Param,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import type { Request } from 'express';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { ProductResponse } from './dto/get-product.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoles } from '../../enums/user-roles.enum';
 import { Public } from '../auth/decorators/is-public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { CreateProductDto } from './dto/create-product.dto';
+import { ProductResponse } from './dto/get-product.dto';
+import { ProductService } from './product.service';
 
 @Controller('product')
 @UseGuards(AuthGuard)
@@ -29,6 +29,7 @@ export class ProductController {
   }
 
   @Get('all')
+  @Public()
   async getAllProducts(): Promise<ProductResponse[]> {
     return this.productService.getAllProducts();
   }

@@ -6,6 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/guards/auth.guard';
 import { ProductModule } from './modules/products/product.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductModule } from './modules/products/product.module';
     UserModule,
     ProductModule,
     AuthModule,
+    CartModule,
   ],
   providers: [
     {
