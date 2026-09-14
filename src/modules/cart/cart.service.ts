@@ -1,12 +1,15 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { UserRoles } from '../../enums/user-roles.enum';
 import { Product } from '../products/entities/product.entity';
+import { User } from '../user/entities/user.entity';
 import { AddCartItemDto } from './dto/add-item.dto';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CartItem } from './entities/cart-item.entity';
@@ -21,6 +24,8 @@ export class CartService {
     private readonly cartItemRepository: typeof CartItem,
     @InjectModel(Product)
     private readonly productRepository: typeof Product,
+    @InjectModel(User)
+    private readonly userEntity: typeof User,
   ) {}
 
   async create(createCartDto: CreateCartDto) {
@@ -109,10 +114,19 @@ export class CartService {
     try {
       const cart = await this.cartRepository.findByPk(id, {
         include: [
-          'items',
+          {
+            association: 'items',
+            include: [
+              {
+                association: 'product',
+              },
+            ],
+          },
           {
             association: 'user',
-            attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
+            attributes: {
+              exclude: ['password', 'createdAt', 'updatedAt'],
+            },
           },
         ],
       });
@@ -129,6 +143,57 @@ export class CartService {
 
       throw new InternalServerErrorException(
         `Failed to retrieve cart: ${error.message}`,
+      );
+    }
+  }
+
+  async removeItemByCart(cartId: string, productId: string) {
+    try {
+      const prod = await this.cartItemRepository.findOne({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+      if (!prod) {
+        throw new NotFoundException('Cart not found');
+      }
+      await prod.destroy();
+      return {
+        message: 'Item removed from cart',
+      };
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Failed to remove item: ${error.message}`,
+      );
+    }
+  }
+
+  async getAllCarts(userId: string): Promise<Cart[]> {
+    try {
+      const user = await this.userEntity.findByPk(userId);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (user.role !== UserRoles.ADMIN) {
+        throw new ForbiddenException(
+          'Você não tem permissão para acessar esse recurso',
+        );
+      }
+      return await this.cartRepository.findAll({
+        include: [
+          {
+            association: 'items',
+          },
+          {
+            association: 'user',
+            attributes: ['id', 'name', 'email', 'avatar', 'role'],
+          },
+        ],
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Failed to retrieve carts: ${error.message}`,
       );
     }
   }

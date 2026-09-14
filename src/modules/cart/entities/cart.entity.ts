@@ -37,7 +37,6 @@ export class Cart extends Model<Cart, CreateCartInterface> {
   @BelongsTo(() => User)
   declare user: User;
 
-  // <--- 3. Adicione a associação de 1 para N com CartItem
   @HasMany(() => CartItem)
   declare items: CartItem[];
 }
