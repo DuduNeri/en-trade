@@ -4,7 +4,7 @@ import {
   DataType,
   Default,
   ForeignKey,
-  HasMany, // <--- 1. Importe o HasMany
+  HasMany, 
   Model,
   PrimaryKey,
   Table,
@@ -12,7 +12,7 @@ import {
 
 import { User } from '../../user/entities/user.entity';
 import { CreateCartInterface } from '../interfaces/cart.interface';
-import { CartItem } from './cart-item.entity'; // <--- 2. Importe a entidade CartItem
+import { CartItem } from './cart-item.entity'; 
 
 @Table({
   tableName: 'carts',

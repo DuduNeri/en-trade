@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -44,5 +45,10 @@ export class ProductController {
   @Get('slug/:slug')
   async getProdBySlug(@Param('slug') slug: string) {
     return this.productService.getProductBySlug(slug);
+  }
+
+  @Delete('id')
+  async removeProduct(@Param('id') id: string) {
+    return this.productService.excludeProd(id);
   }
 }
