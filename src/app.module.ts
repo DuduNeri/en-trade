@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
-import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthGuard } from './modules/auth/guards/auth.guard';
-import { ProductModule } from './modules/products/product.module';
 import { CartModule } from './modules/cart/cart.module';
+import { ProductModule } from './modules/products/product.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CartModule } from './modules/cart/cart.module';
     ProductModule,
     AuthModule,
     CartModule,
+    UploadModule,
   ],
   providers: [
     {

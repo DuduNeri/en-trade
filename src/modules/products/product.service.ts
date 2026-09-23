@@ -21,20 +21,43 @@ export class ProductService {
   }
 
   async getAllProducts(): Promise<ProductResponse[]> {
-    const products = await this.productRepository.findAll();
+    const products = await this.productRepository.findAll({
+      include: [
+        {
+          association: 'user',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
 
     if (products.length === 0) {
       throw new NotFoundException('Products empty');
     }
+    return products.map((product) => {
+      const data = product.toJSON();
 
-    return products.map((product) => ({
-      ...product,
-      slug: product.slug ?? '',
-    }));
+      return {
+        id: data.id,
+        userId: data.userId,
+        title: data.title,
+        slug: data.slug ?? '',
+        description: data.description,
+        price: data.price,
+        stock_quantity: data.stock_quantity,
+        sku: data.sku,
+        category_id: data.category_id,
+        is_active: data.is_active,
+        image: data.image,
+        user: data.user,
+      };
+    });
   }
 
   async getProduct(id: string) {
     const response = await this.productRepository.findByPk(id);
+    if (!response) {
+      throw new NotFoundException('Product not found');
+    }
     return response;
   }
 

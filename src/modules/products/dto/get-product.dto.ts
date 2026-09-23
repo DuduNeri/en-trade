@@ -1,14 +1,3 @@
-import { Product } from './../entities/product.entity';
-import {
-  IsArray,
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
-
 export class ProductResponse {
   id!: string;
   userId!: string;

@@ -9,6 +9,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { UserRoles } from '../../enums/user-roles.enum';
+import { UploadService } from '../upload/upload.service';
 import { AuthService } from './../auth/services/auth.service';
 import { CreateUserSellerDto } from './dto/create-seller';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,6 +17,7 @@ import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';
+import { ModelStatic } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -24,7 +26,12 @@ export class UserService {
     private userModel: typeof User,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+    private readonly uploadService: UploadService,
   ) {}
+
+  private extractKey(url: string): string {
+    return url.split('/').pop() ?? url;
+  }
 
   async createUser(createUserDto: CreateUserDto) {
     return this.saveUserWithRole(createUserDto, UserRoles.USER);
@@ -65,6 +72,28 @@ export class UserService {
       user: userWithoutPassword,
     };
   }
+
+  async updateAvatar(userId: string, avatarFile: Express.Multer.File) {
+    const user = await this.userModel.findByPk(userId);
+     console.log('updateAvatar userId:', userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const result = await this.uploadService.saveFile(avatarFile);
+
+    if (user.avatar) {
+      const oldKey = this.extractKey(user.avatar);
+      await this.uploadService.deleteFile(oldKey).catch(() => {});
+    }
+
+    await user.update({ avatar: result.url });
+
+    const { password: _, ...userWithoutPassword } = user.toJSON() as User;
+    return userWithoutPassword;
+  }
+
+  async createAvatar() {}
 
   async findUserById(id: string) {
     const user = await this.userModel.findByPk(id);

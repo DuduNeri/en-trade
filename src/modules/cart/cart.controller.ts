@@ -32,7 +32,7 @@ export class CartController {
     return this.cartService.addItem(userId, dto);
   }
 
-  @Get('all')
+  @Get('all/items')
   async getAllCarts(@Req() req: any): Promise<Cart[]> {
     return this.cartService.getAllCarts(req.user.sub);
   }
