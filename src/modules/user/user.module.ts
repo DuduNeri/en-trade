@@ -11,7 +11,7 @@ import { TestController } from './test.connect.controller';
   imports: [
     SequelizeModule.forFeature([User]),
     forwardRef(() => AuthModule),
-    UploadModule, // <- novo
+    UploadModule, 
   ],
   controllers: [UserController, TestController],
   providers: [UserService],

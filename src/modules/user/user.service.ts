@@ -9,6 +9,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { UserRoles } from '../../enums/user-roles.enum';
+import { Product } from '../products/entities/product.entity';
 import { UploadService } from '../upload/upload.service';
 import { AuthService } from './../auth/services/auth.service';
 import { CreateUserSellerDto } from './dto/create-seller';
@@ -17,7 +18,6 @@ import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';
-import { ModelStatic } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,7 @@ export class UserService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly uploadService: UploadService,
-  ) {}
+  ) { }
 
   private extractKey(url: string): string {
     return url.split('/').pop() ?? url;
@@ -75,7 +75,7 @@ export class UserService {
 
   async updateAvatar(userId: string, avatarFile: Express.Multer.File) {
     const user = await this.userModel.findByPk(userId);
-     console.log('updateAvatar userId:', userId);
+    console.log('updateAvatar userId:', userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -84,7 +84,7 @@ export class UserService {
 
     if (user.avatar) {
       const oldKey = this.extractKey(user.avatar);
-      await this.uploadService.deleteFile(oldKey).catch(() => {});
+      await this.uploadService.deleteFile(oldKey).catch(() => { });
     }
 
     await user.update({ avatar: result.url });
@@ -93,14 +93,24 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  async createAvatar() {}
-
   async findUserById(id: string) {
-    const user = await this.userModel.findByPk(id);
+    const user = await this.userModel.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: Product,
+          separate: true,
+          order: [['createdAt', 'DESC']],
+        },
+      ],
+    });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     const { password: _, ...userWithoutPassword } = user.toJSON() as User;
+
     return userWithoutPassword;
   }
 

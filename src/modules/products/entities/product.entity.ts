@@ -9,8 +9,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { CreateProductInterface } from '../interfaces/product.interface';
 import { User } from '../../user/entities/user.entity';
+import { CreateProductInterface } from '../interfaces/product.interface';
 
 @Table({
   tableName: 'products',
@@ -24,13 +24,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare id: string;
 
-
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   declare title: string;
-
 
   @Column({
     type: DataType.STRING,
@@ -38,13 +36,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare slug?: string;
 
-
   @Column({
     type: DataType.TEXT,
     allowNull: false,
   })
   declare description: string;
-
 
   @Column({
     type: DataType.DECIMAL(10, 2),
@@ -52,13 +48,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare price: number;
 
-
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   declare stock_quantity: number;
-
 
   @Column({
     type: DataType.STRING,
@@ -67,13 +61,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare sku?: string;
 
-
   @Column({
     type: DataType.UUID,
-    allowNull: false,
+    allowNull: true,
   })
   declare category_id: string;
-
 
   @Column({
     type: DataType.STRING,
@@ -81,13 +73,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare image?: string;
 
-
   @Column({
     type: DataType.JSON,
     allowNull: true,
   })
   declare images?: string[];
-
 
   @Column({
     type: DataType.BOOLEAN,
@@ -96,13 +86,11 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare is_active: boolean;
 
-
   @Column({
     type: DataType.FLOAT,
     allowNull: true,
   })
   declare weight?: number;
-
 
   @Column({
     type: DataType.FLOAT,
@@ -110,20 +98,17 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare height?: number;
 
-
   @Column({
     type: DataType.FLOAT,
     allowNull: true,
   })
   declare width?: number;
 
-
   @Column({
     type: DataType.FLOAT,
     allowNull: true,
   })
   declare length?: number;
-
 
   @ForeignKey(() => User)
   @Column({
@@ -132,7 +117,6 @@ export class Product extends Model<Product, CreateProductInterface> {
   })
   declare userId: string;
 
-
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { foreignKey: 'userId', as: 'user' })
   declare user: User;
 }

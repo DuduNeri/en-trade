@@ -20,6 +20,7 @@ import { User } from '../modules/user/entities/user.entity';
         models: [User, Product],
         logging: false,
         synchronize: true,
+        sync: { alter: true }, 
       }),
     }),
   ],

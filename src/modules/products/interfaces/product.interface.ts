@@ -27,3 +27,4 @@ export interface CreateProductInterface {
 
   userId: string;
 }
+

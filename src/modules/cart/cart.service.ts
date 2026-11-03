@@ -26,7 +26,7 @@ export class CartService {
     private readonly productRepository: typeof Product,
     @InjectModel(User)
     private readonly userEntity: typeof User,
-  ) {}
+  ) { }
 
   async create(createCartDto: CreateCartDto) {
     try {

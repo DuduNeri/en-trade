@@ -1,12 +1,14 @@
 import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  PrimaryKey,
-  Default,
   AllowNull,
+  Column,
+  DataType,
+  Default,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
 } from 'sequelize-typescript';
+import { Product } from '../../products/entities/product.entity';
 import { UserCreationAttributes } from '../interfaces/user.interfaces';
 import { UserRoles } from './../../../enums/user-roles.enum';
 
@@ -54,6 +56,9 @@ export class User extends Model<User, UserCreationAttributes> {
     type: DataType.ENUM(...Object.values(UserRoles)),
   })
   declare role: UserRoles;
+
+  @HasMany(() => Product, { foreignKey: 'userId', as: 'products' })
+  declare products: Product[];
 
   override toJSON(): any {
     const { password, ...values } = this.get();

@@ -11,6 +11,11 @@ export class ProductResponse {
   image?: string;
   images?: string[];
   is_active!: boolean;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
 
   constructor(data: Partial<ProductResponse>) {
     Object.assign(this, data);

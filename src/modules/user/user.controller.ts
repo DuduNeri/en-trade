@@ -34,11 +34,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Patch('avatar')
-  @UseGuards()
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('avatar', {
       storage: memoryStorage(),
-      limits: { fileSize: MAX_FILE_SIZE },
+
+      limits: {
+        fileSize: MAX_FILE_SIZE,
+      },
+
       fileFilter: (req, file, cb) => {
         if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
           cb(null, true);
@@ -48,6 +52,7 @@ export class UserController {
       },
     }),
   )
+  
   async updateAvatar(
     @Req() req: any,
     @UploadedFile() avatar: Express.Multer.File,
@@ -60,6 +65,7 @@ export class UserController {
     if (!avatar) {
       throw new BadRequestException('Envie o arquivo no campo "avatar"');
     }
+
     return this.userService.updateAvatar(id, avatar);
   }
 
@@ -83,7 +89,6 @@ export class UserController {
 
   @Get(':id')
   @UseGuards()
-  @Roles(UserRoles.ADMIN)
   async getUserById(@Param('id') id: string) {
     return this.userService.findUserById(id);
   }
