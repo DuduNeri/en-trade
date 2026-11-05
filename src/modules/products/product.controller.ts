@@ -29,7 +29,7 @@ import { ProductService } from './product.service';
 @UseGuards(AuthGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
-
+  //criar produto
   @Post('create')
   @Roles(UserRoles.SELLER)
   @UseInterceptors(FileInterceptor('image'))
@@ -42,7 +42,7 @@ export class ProductController {
 
     return this.productService.createProduct(data, req.user.sub, file);
   }
-
+  //adicionar aos favoritos
   @Post(':id/favorite')
   addToFavorites(
     @Param('id', ParseUUIDPipe) id: string,
@@ -50,30 +50,30 @@ export class ProductController {
   ) {
     return this.productService.addToFavorites(req.user.sub, id);
   }
-
+  //buscar favoritos de um usuário
   @Get('favorites')
   getFavorites(@Req() req: Request) {
     return this.productService.getFavorities(req.user.sub);
   }
-
+  //trazer todos os produtos
   @Get('all')
   @Public()
   async getAllProducts(): Promise<ProductResponse[]> {
     return this.productService.getAllProducts();
   }
-
+  //buscar produto pelo slug
   @Public()
   @Get('slug/:slug')
   async getProdBySlug(@Param('slug') slug: string) {
     return this.productService.getProductBySlug(slug);
   }
-
+  //pegar um produto específico pelo ID
   @Get(':id')
   @Roles(UserRoles.SELLER)
   async getProd(@Param('id', ParseUUIDPipe) id: string) {
     return this.productService.getProduct(id);
   }
-
+  //decrementar estoque
   @Patch(':id/decrease-stock')
   async decreaseStock(
     @Param('id', ParseUUIDPipe) id: string,
@@ -81,7 +81,7 @@ export class ProductController {
   ) {
     return this.productService.decreaseStock(id, dto.quantity);
   }
-
+  //remover dos favoritos
   @Delete(':id/favorites')
   async removeFavorites(
     @Param('id', ParseUUIDPipe) productId: string,
@@ -89,12 +89,12 @@ export class ProductController {
   ) {
     return this.productService.removeFavorites(req.user.sub, productId);
   }
-
+  //deletar todos os produtos
   @Delete('all')
   async destroyProds() {
     return this.productService.deleteAllProds();
   }
-
+  //deletar produto
   @Delete(':id')
   async deleteProdForEver(@Param('id', ParseUUIDPipe) id: string) {
     return this.productService.deleteProd(id);

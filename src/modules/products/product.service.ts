@@ -140,7 +140,7 @@ export class ProductService {
       include: [
         {
           association: 'user',
-          attributes: ['id', 'name', 'email'],
+          attributes: ['id', 'name', 'email', 'avatar'],
         },
       ],
       order: [['createdAt', 'DESC']],
